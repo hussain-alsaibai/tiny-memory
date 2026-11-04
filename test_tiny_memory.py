@@ -8,6 +8,8 @@ Run with: python test_tiny_memory.py
 No external test framework required — uses assert statements.
 """
 
+from __future__ import annotations
+
 import json
 import math
 import os
