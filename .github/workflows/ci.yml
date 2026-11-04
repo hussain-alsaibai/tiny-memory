@@ -1,0 +1,28 @@
+name: CI
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.8 is the floor declared in pyproject.toml, so it is the version
+        # that matters most. The suite used to fail there: the test file
+        # annotated a helper with list[str], which is PEP 585 and 3.9+.
+        # The library module already had the future annotations import;
+        # the test file did not.
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: pip install -e . pytest
+      - name: Unit tests
+        run: python -m pytest test_tiny_memory.py -v
